@@ -10,7 +10,7 @@ filedir = '__file__:    ', __file__
 filedir = filedir[1].rstrip("gdrpc.py")
 cprint(figlet_format("PyGDRPC", font="small"))
 dict = {
-  "version": "1.1.3",
+  "version": "1.2.0",
   "editor": {
     "LevelNameVisible": "false"
   },
