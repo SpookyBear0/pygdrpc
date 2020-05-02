@@ -40,7 +40,7 @@ try:
     memory = gd.memory.get_memory()
 except RuntimeError:
     print("Run GD first!")
-    Wait(10, True)
+    Wait(5, True)
     exit()
 
 smallimage = "none" # fallback in case of the difficulty face not being returned
@@ -76,8 +76,7 @@ async def get_offical_difficulty(level: gd.Level) -> str:
         base = olevel.difficulty.name.lower().split("_")
         return '-'.join(base)
 
-runningstr = "\nRunning!"
-if data.get("logs").get("Visible") == "true": runningstr = runningstr + " v" + data.get("version")
+runningstr = "\nRunning!" + " v" + data.get("version")
 print(runningstr)
 
 while True:
