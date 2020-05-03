@@ -1,10 +1,1 @@
-{
-  "version": "1.2.0",
-  "editor": {
-    "LevelNameVisible": false
-  },
-  
-  "logs": {
-    "Visible": true
-  }
-}
+{"version": "1.2.0", "editor": {"LevelNameVisible": "false"}, "logs": {"Visible": "true"}}
