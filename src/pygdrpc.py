@@ -20,15 +20,15 @@ dict = {
   }
 }
 print(f"\nStarting...")
-try:
-    if os.path.isfile(f"{filedir}config.json") and os.access(f"{filedir}config.json", os.R_OK):  
-        with open(f"{filedir}config.json") as file:
-            data = json.load(file)
-except:
+if os.path.isfile(f"{filedir}config.json") and os.access(f"{filedir}config.json", os.R_OK):
+    print("true")
+    with open(f"{filedir}config.json") as file:
+        data = json.load(file)
+else:
     with open(f"{filedir}config.json", "w") as file:  
         json.dump(dict, file)
-        with open(f"{filedir}config.json") as file:
-            data = json.load(file)
+        print("Created conifg file! Please reopen the program to start")
+        exit()
 def Wait (time, silent=False): # time is in seconds
     time = time * 1000
     string = f"ping 192.0.2.1 -n 1 -w {time}" # ping the local machine
