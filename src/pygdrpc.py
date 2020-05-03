@@ -9,6 +9,12 @@ from pyfiglet import figlet_format
 filedir = '__file__:    ', __file__
 filedir = filedir[1].rstrip("gdrpc.py")
 cprint(figlet_format("PyGDRPC", font="small"))
+def Wait (time, silent=False): # time is in seconds
+    time = time * 1000
+    string = f"ping 192.0.2.1 -n 1 -w {time}" # ping the local machine
+    if silent:
+        string = string + " >nul"
+    os.system(string)
 dict = {
   "version": "1.2.0",
   "editor": {
@@ -28,13 +34,8 @@ else:
     with open(f"{filedir}config.json", "w") as file:  
         json.dump(dict, file)
         print("Created conifg file! Please reopen the program to start")
+        Wait(5, True)
         exit()
-def Wait (time, silent=False): # time is in seconds
-    time = time * 1000
-    string = f"ping 192.0.2.1 -n 1 -w {time}" # ping the local machine
-    if silent:
-        string = string + " >nul"
-    os.system(string)
 
 try:
     memory = gd.memory.get_memory()
