@@ -24,6 +24,8 @@ It is **not** hard to configure:
 * `false` = disable
 
 Default configuration should already suit the majority of the people.
+## Support
+If you need help with the program, join the support discord. The link can be found here: https://discord.gg/NRQxzjg
 
 ## Compiling
 If you want to get the latest devoloper version right off the master branch, you can build it yourself.
