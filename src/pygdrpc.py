@@ -32,7 +32,7 @@ if os.path.isfile(f"{filedir}config.json") and os.access(f"{filedir}config.json"
         data = json.load(file)
 else:
     with open(f"{filedir}config.json", "w") as file:  
-        json.dump(dict, file)
+        json.dump(dict, file, indent=4)
         print("Created conifg file! Please reopen the program to start")
         Wait(5, True)
         exit()
