@@ -1,7 +1,7 @@
 ![Python App](https://github.com/SpookyBear0/pygdrpc/workflows/Python%20App/badge.svg)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
-# PyGDRPC 1.2.0
+# PyGDRPC 1.2.1b
 Geometry Dash rich presence, rewritten in Python!
   
 ![Example](https://i.imgur.com/hoMXIHh.png)
@@ -24,6 +24,8 @@ It is **not** hard to configure:
 * `false` = disable
 
 Default configuration should already suit the majority of the people.
+## Support
+If you need help with the program, join the support discord. The link can be found here: https://discord.gg/NRQxzjg
 
 ## Compiling
 If you want to get the latest devoloper version right off the master branch, you can build it yourself.
