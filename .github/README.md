@@ -1,6 +1,6 @@
 ![Python App](https://github.com/SpookyBear0/pygdrpc/workflows/Python%20App/badge.svg)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
-[Support Discord](https://img.shields.io/discord/706978972033876018)
+[![Support Discord](https://img.shields.io/discord/706978972033876018)](https://discord.gg/NRQxzjg)
 # PyGDRPC 1.2.1b
 Geometry Dash rich presence, rewritten in Python!
   
