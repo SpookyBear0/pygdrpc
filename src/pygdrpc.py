@@ -27,7 +27,6 @@ dict = {
 }
 print(f"\nStarting...")
 if os.path.isfile(f"{filedir}config.json") and os.access(f"{filedir}config.json", os.R_OK):
-    print("true")
     with open(f"{filedir}config.json") as file:
         data = json.load(file)
 else:
@@ -89,20 +88,22 @@ while True:
     iseditor = memory.is_in_editor()
     name = memory.get_level_name()
     percent = str(memory.get_normal_percent())
+    currentpercent = int(memory.get_percent())
+    currentpercent = str(currentpercent) + "%"
     objects = str(memory.read_bytes(4, 0x3222D0, 0x168, 0x3A0).as_int())
     
     if scenev == 3 and iseditor == False and ltypev == 3:
         lid = memory.get_level_id()
         smallimage = asyncio.run(get_difficulty(lid))
-        RPC.update(pid=memory.process_id, state=str(f"{name} ({percent}%)"), details="Playing a level", large_image="gd", small_image=asyncio.run(get_difficulty(lid)), large_text="Geometry Dash")
+        RPC.update(pid=memory.process_id, state=str(f"{name} ({percent}%), at {currentpercent}"), details="Playing a level", large_image="gd", small_image=asyncio.run(get_difficulty(lid)), large_text="Geometry Dash")
     
     if scenev == 3 and iseditor:
-        if not data.get("editor").get("LevelNameVisible") == "true": RPC.update(pid=memory.process_id, details="Editing a level", large_image="gd", small_image="cp", large_text="Geometry Dash")
-        else: RPC.update(pid=memory.process_id, state=str(f"{name} ({objects} objects)"), details="Editing a level", large_image="gd", small_image="cp", large_text="Geometry Dash")
+        if not data.get("editor").get("LevelNameVisible") == "true": RPC.update(pid=memory.process_id, details="Editing a level", state="Details hidden", large_image="gd", small_image="cp", large_text="Geometry Dash")
+        else: RPC.update(pid=memory.process_id, state=str(f"{memory.get_editor_level_name()} ({objects} objects)"), details="Editing a level", large_image="gd", small_image="cp", large_text="Geometry Dash")
     
     if scenev == 3 and iseditor == False and ltypev == 2:
-        if not data.get("editor").get("LevelNameVisible") == "true": RPC.update(pid=memory.process_id, state=str(f"({percent}%)"), details="Playing an editor level", large_image="gd", small_image="cp", large_text="Geometry Dash")
-        else: RPC.update(pid=memory.process_id, state=str(f"{name} ({percent}%)"), details="Playing an editor level", large_image="gd", small_image="cp", large_text="Geometry Dash")
+        if not data.get("editor").get("LevelNameVisible") == "true": RPC.update(pid=memory.process_id, state="Details hidden", details="Playing an editor level", large_image="gd", small_image="cp", large_text="Geometry Dash")
+        else: RPC.update(pid=memory.process_id, state=str(f"{name} ({percent}%), at {currentpercent}"), details="Playing an editor level", large_image="gd", small_image="cp", large_text="Geometry Dash")
     
     else:
         if ltypev == 0 and scenev != 3:
@@ -113,5 +114,5 @@ while True:
                 olevel = gd.Level.official(lid)
                 name = olevel.name
                 smallimage = asyncio.run(get_offical_difficulty(lid))
-                RPC.update(pid=memory.process_id, state=f"{name} ({percent}%)", details="Playing an official level", large_image="gd", small_image=smallimage, large_text="Geometry Dash")
-    time.sleep(5)
+                RPC.update(pid=memory.process_id, state=f"{name} ({percent}%), at {currentpercent}", details="Playing an official level", large_image="gd", small_image=smallimage, large_text="Geometry Dash")
+    time.sleep(1)
