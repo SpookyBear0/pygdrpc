@@ -16,7 +16,7 @@ def Wait (time, silent=False): # time is in seconds
         string = string + " >nul"
     os.system(string)
 dict = {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "editor": {
     "LevelNameVisible": "false"
   },
@@ -88,7 +88,7 @@ while True:
     iseditor = memory.is_in_editor()
     name = memory.get_level_name()
     percent = str(memory.get_normal_percent())
-    currentpercent = int(memory.get_percent())
+    currentpercent = round(memory.get_percent())
     currentpercent = str(currentpercent) + "%"
     objects = str(memory.read_bytes(4, 0x3222D0, 0x168, 0x3A0).as_int())
     
