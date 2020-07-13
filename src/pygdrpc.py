@@ -5,6 +5,7 @@ import asyncio
 import os
 import json
 from termcolor import cprint
+import time
 from pyfiglet import figlet_format
 filedir = '__file__:    ', __file__
 filedir = filedir[1].rstrip("gdrpc.py")
@@ -79,6 +80,9 @@ async def get_offical_difficulty(level: gd.Level) -> str:
 runningstr = "\nRunning!" + " v" + data.get("version")
 print(runningstr)
 
+run_once = 0
+startingtime = 0
+
 while True:
     memory.reload()
     scenev = memory.get_scene_value()
@@ -87,26 +91,46 @@ while True:
     ltype = memory.get_level_type()
     iseditor = memory.is_in_editor()
     name = memory.get_level_name()
-    percent = str(memory.get_normal_percent())
-    currentpercent = round(memory.get_percent())
-    currentpercent = str(currentpercent) + "%"
+    creator = memory.get_level_creator()
+    currentattempt = memory.get_attempt()
     objects = str(memory.read_bytes(4, 0x3222D0, 0x168, 0x3A0).as_int())
     
     if scenev == 3 and iseditor == False and ltypev == 3:
+        if run_once == 0:
+            startingtime = int(time.time())
+            run_once = 1
         lid = memory.get_level_id()
         smallimage = asyncio.run(get_difficulty(lid))
-        RPC.update(pid=memory.process_id, state=str(f"{name} ({percent}%), at {currentpercent}"), details="Playing a level", large_image="gd", small_image=asyncio.run(get_difficulty(lid)), large_text="Geometry Dash")
+        if memory.is_practice_mode():
+            RPC.update(pid=memory.process_id, state=str(f"{name} by {creator} (Attempt {currentattempt})"), details="Playing a level in practice mode", large_image="gd", small_image=asyncio.run(get_difficulty(lid)), large_text="Geometry Dash", start=startingtime)
+        else:
+            RPC.update(pid=memory.process_id, state=str(f"{name} by {creator} (Attempt {currentattempt})"), details="Playing a level", large_image="gd", small_image=asyncio.run(get_difficulty(lid)), large_text="Geometry Dash", start=startingtime)
     
     if scenev == 3 and iseditor:
-        if not data.get("editor").get("LevelNameVisible") == "true": RPC.update(pid=memory.process_id, details="Editing a level", state="Details hidden", large_image="gd", small_image="cp", large_text="Geometry Dash")
-        else: RPC.update(pid=memory.process_id, state=str(f"{memory.get_editor_level_name()} ({objects} objects)"), details="Editing a level", large_image="gd", small_image="cp", large_text="Geometry Dash")
+        if run_once == 0:
+            startingtime = int(time.time())
+            run_once = 1
+        if not data.get("editor").get("LevelNameVisible") == "true": RPC.update(pid=memory.process_id, details="Editing a level", state="Details hidden", large_image="gd", small_image="cp", large_text="Geometry Dash", start=startingtime)
+        else: RPC.update(pid=memory.process_id, state=str(f"{memory.get_editor_level_name()} ({objects} objects)"), details="Editing a level", large_image="gd", small_image="cp", large_text="Geometry Dash", start=startingtime)
     
     if scenev == 3 and iseditor == False and ltypev == 2:
-        if not data.get("editor").get("LevelNameVisible") == "true": RPC.update(pid=memory.process_id, state="Details hidden", details="Playing an editor level", large_image="gd", small_image="cp", large_text="Geometry Dash")
-        else: RPC.update(pid=memory.process_id, state=str(f"{name} ({percent}%), at {currentpercent}"), details="Playing an editor level", large_image="gd", small_image="cp", large_text="Geometry Dash")
+        if run_once == 0:
+            startingtime = int(time.time())
+            run_once = 1
+        if not data.get("editor").get("LevelNameVisible") == "true":
+            if memory.is_practice_mode():
+                RPC.update(pid=memory.process_id, state="Details hidden", details="Playing an editor level in practice mode", large_image="gd", small_image="cp", large_text="Geometry Dash", start=startingtime)
+            else:
+                RPC.update(pid=memory.process_id, state="Details hidden", details="Playing an editor level", large_image="gd", small_image="cp", large_text="Geometry Dash", start=startingtime)
+        else:
+            if memory.is_practice_mode():
+                RPC.update(pid=memory.process_id, state=str(f"{name} (Attempt {currentattempt})"), details="Playing an editor level in practice mode", large_image="gd", small_image="cp", large_text="Geometry Dash", start=startingtime)
+            else:
+                RPC.update(pid=memory.process_id, state=str(f"{name} (Attempt {currentattempt})"), details="Playing an editor level", large_image="gd", small_image="cp", large_text="Geometry Dash", start=startingtime)
     
     else:
         if ltypev == 0 and scenev != 3:
+            run_once = 0
             RPC.update(pid=memory.process_id, state="     ", details="In menu", large_image="gd", large_text="Geometry Dash")
         else:
             if scenev == 9 and ltypev == 1:
@@ -114,5 +138,11 @@ while True:
                 olevel = gd.Level.official(lid)
                 name = olevel.name
                 smallimage = asyncio.run(get_offical_difficulty(lid))
-                RPC.update(pid=memory.process_id, state=f"{name} ({percent}%), at {currentpercent}", details="Playing an official level", large_image="gd", small_image=smallimage, large_text="Geometry Dash")
+                if run_once == 0:
+                    startingtime = int(time.time())
+                    run_once = 1
+                if memory.is_practice_mode():
+                    RPC.update(pid=memory.process_id, state=f"{name} (Attempt {currentattempt})", details="Playing an official level in practice mode", large_image="gd", small_image=smallimage, large_text="Geometry Dash", start=startingtime)
+                else:
+                    RPC.update(pid=memory.process_id, state=f"{name} (Attempt {currentattempt})", details="Playing an official level", large_image="gd", small_image=smallimage, large_text="Geometry Dash", start=startingtime)
     time.sleep(1)
