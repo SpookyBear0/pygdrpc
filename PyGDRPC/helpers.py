@@ -1,11 +1,15 @@
 import gd
 
-client = gd.Client
-levelid = gd.memory.get_memory().get_level_id()
+client = gd.Client()
+memory = gd.memory.get_state(load=True)
+game_manager = memory.get_game_manager()
+play_layer = game_manager.get_play_layer()
+level = play_layer.get_level_settings().get_level()
+levelid = level.get_id()
 
 async def get_difficulty(level: gd.Level) -> str:
     try:
-        level = await client.get_level(levelid)
+        level = await client.get_level(level_id=levelid)
     except gd.MissingAccess:
         pass
     else:

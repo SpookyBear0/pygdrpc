@@ -4,87 +4,77 @@ import asyncio
 from config import config
 import os
 from time import sleep, time
+from gd.enums import *
 from helpers import get_difficulty
 
 client = gd.Client()
 client_id = "703049428822655048"
 
 try:
-    memory = gd.memory.get_memory()
-except RuntimeError:
+    memory = gd.memory.get_state(load=True)
+except LookupError:
     print("Run GD first!")
     os.system("PAUSE")
     exit()
 
 pid = memory.process_id
 startingtime = int(time())
-scenevalue = memory.get_scene_value()
-scene = memory.get_scene()
-leveltypevalue = memory.get_level_type_value()
-leveltype = memory.get_level_type()
-iseditor = memory.is_in_editor()
-name = memory.get_level_name()
-creator = memory.get_level_creator()
-currentattempt = memory.get_attempt()
-ispractice = memory.is_practice_mode()
-editorlevelname = memory.get_editor_level_name()
-levelid = memory.get_level_id()
-objects = str(memory.read_bytes(4, 0x3222D0, 0x168, 0x3A0).as_int())
+game_manager = memory.get_game_manager()
+editor_layer = game_manager.get_editor_layer()
+play_layer = game_manager.get_play_layer()
+player = play_layer.get_player()
+level = play_layer.get_level_settings().get_level()
+account_manager = memory.get_account_manager()
+user_name = account_manager.get_user_name()
 
 def exit():
     os._exit(0)
 
 async def main():
     while True:
-        if scenevalue == 3 and iseditor:
-            print(1)
-            if not config["editor"]["levelnamevisible"]: await rpc.update(pid=pid, details="Editing a level", 
-            state="Details hidden", 
-            large_image="gd", 
-            small_image="cp", 
-            large_text="Geometry Dash", 
-            start=startingtime)
-            else: await rpc.update(pid=pid, details="Editing a level", 
-            state=f"{editorlevelname} ({objects} objects)", 
-            large_image="gd", 
-            small_image="cp", 
-            large_text="Geometry Dash", 
-            start=startingtime)
+        scene = game_manager.get_scene()
+        if scene == Scene.EDITOR_OR_LEVEL:
+            if not editor_layer.is_null():
+                object_count=editor_layer.get_object_count()
+                editor_level = editor_layer.get_level_settings().get_level()
+                editorlevelname = editor_level.get_name()
 
-
-        if scenevalue == 3 and leveltypevalue == 3:
-            print(2)
-            if ispractice:
-                await rpc.update(pid=pid, state=str(f"{name} by {creator} (Attempt {currentattempt})"), 
-                details="Playing a level in practice mode", 
-                large_image="gd", 
-                small_image=await get_difficulty(levelid), 
-                large_text="Geometry Dash", 
-                start=startingtime)
-            else:
-                await rpc.update(pid=pid, state=str(f"{name} by {creator} (Attempt {currentattempt})"), 
-                details="Playing a level", 
-                large_image="gd", 
-                small_image=await get_difficulty(levelid), 
-                large_text="Geometry Dash", 
-                start=startingtime)
-
-        if scenevalue == 3 and iseditor == False and leveltypevalue == 2:
-            print(3)
-            if ispractice:
-                practice = " in practice mode"
-            else:
-                practice = ""
-            if config["editor"]["levelnamevisible"]:
-                await rpc.update(pid=pid, state=str(f"{name} (Attempt {currentattempt})"), 
-                details="Playing an editor level" + practice, 
-                large_image="gd", 
-                small_image="cp", 
-                large_text="Geometry Dash", 
-                start=startingtime)
+                if not config["editor"]["levelnamevisible"]: 
+                    await rpc.update(pid=pid, details="Editing a level", 
+                    state="Details hidden", 
+                    large_image="gd", 
+                    small_image="cp", 
+                    large_text="Geometry Dash", 
+                    start=startingtime)
+                else: 
+                    await rpc.update(pid=pid, details="Editing a level", 
+                    state=f"{editorlevelname} ({object_count} objects)", 
+                    large_image="gd", 
+                    small_image="cp", 
+                    large_text="Geometry Dash", 
+                    start=startingtime)
+            elif editor_layer.is_null() and level.get_level_type() == LevelType.EDITOR:
+                attempt = play_layer.get_attempt()
+                levelid = level.get_id()
+                name = level.get_name()
+                creator = level.get_creator_name()
+                if config["editor"]["levelnamevisible"]:
+                    await rpc.update(pid=pid, state=str(f"{name} (Attempt {attempt})"), 
+                    details="Playing an editor level", 
+                    large_image="gd", 
+                    small_image="cp", 
+                    large_text="Geometry Dash", 
+                    start=startingtime)
+                else:
+                    await rpc.update(pid=pid, state=str(f"{name} by {creator} (Attempt {attempt})"), 
+                    details="Playing a level", 
+                    large_image="gd", 
+                    small_image=await get_difficulty(levelid), 
+                    large_text="Geometry Dash", 
+                    start=startingtime)
             else:
                 await rpc.update(pid=pid, state="Details hidden", 
-                details="Playing an editor level" + practice, 
+                details="Playing an editor level", 
                 large_image="gd", 
                 small_image="cp", 
                 large_text="Geometry Dash", 
