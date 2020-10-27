@@ -28,4 +28,3 @@ async def get_offical_difficulty(level: gd.Level) -> str:
     else:
         base = olevel.difficulty.name.lower().split("_")
         return '-'.join(base)
-        
