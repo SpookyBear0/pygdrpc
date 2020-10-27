@@ -1,0 +1,2 @@
+pypresence
+git+https://github.com/nekitdev/gd.py/

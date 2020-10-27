@@ -1,6 +1,0 @@
-pypresence
-gd.py
-asyncio
-pyfiglet
-termcolor
-configparser
